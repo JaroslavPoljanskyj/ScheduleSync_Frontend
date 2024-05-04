@@ -39,19 +39,31 @@ function SchedulePanel() {
       <div className={`flex relative mx-2 bg-white h-full shadow-md rounded-3xl overflow-hidden overflow-y-auto`} style={{ height: '85%' }} {...handlers}>
         <div className="grid grid-cols-1 flex-none m-1 h-full w-10" style={{ height: '300%' }}>
           {[...Array(24)].map((_, index) => (
-            <div key={index} className={`flex justify-center items-start text-sm text-slate-500`}>
+            <div key={index} className={`flex justify-center items-start text-base text-violet-500`}>
               {`${index}:00`}
             </div>
           ))}
         </div>
-        <div className="flex-none mt-4 mb-2 h-full bg-violet-300 w-0.5 relative" style={{ height: '300%' }}>
+        <div className="flex-none mt-4 mb-2 h-full bg-violet-200 w-0.5 relative" style={{ height: '300%' }}>
           <div className="absolute bg-violet-600" style={{ top: `${percentage}%`, transform: 'translate(-50%, -50%)', width: '10px', height: '10px', borderRadius: '50%', left: '50%' }}></div>
         </div>
         <div className="w-full m-2" style={{ height: '300%' }}>
           <div className="h-full grid grid-cols-1" style={{ gridTemplateRows: 'repeat(288, 1fr)' }}>
-            {eventList && eventList.map(event => (
-              <Event key={event.id} name={event.name} timeFrom={event.TimeFrom} timeTo={event.TimeTo}/>
-            ))}
+            
+          {eventList && eventList.map(event => (
+            <Event 
+              key={event.id} 
+              eventName={event.eventName} 
+              timeStart={event.startTime} 
+              timeEnd={event.endTime}
+              selectedColor={event.selectedColor}
+              dayOfWeek={event.dayOfWeek}
+              repeatFrequency={event.repeatFrequency}
+              eventDescription={event.eventDescription}
+            />  
+          ))}
+
+
           </div>
           <div className="sticky bottom-4 float-right z-10">
             <button

@@ -17,6 +17,7 @@ const ScheduleDataProvider = ({ children }) => {
     try {
       const activeSchedule = await getActiveSchedule();
       const eventsData = await getEventsForActiveSchedule(activeSchedule.events);
+      console.log("events to be loaded from the provider:" + JSON.stringify(eventsData));
       setEventLoadObject({ state: "ready", data: eventsData });
     } catch (error) {
       setEventLoadObject((current) => ({
@@ -43,6 +44,7 @@ const ScheduleDataProvider = ({ children }) => {
   }
 
   async function getEventsForActiveSchedule(eventsIds) {
+
     const fetchPromises = eventsIds.map(async eventObj => {
       const id = eventObj.id;
       const response = await fetch(`http://localhost:8000/event/${id}/get`);
@@ -55,30 +57,37 @@ const ScheduleDataProvider = ({ children }) => {
   }
 
   async function handleCreateEvent(dtoIn) {
-    // setEventLoadObject((current) => ({ ...current, state: "pending" }));
-    // const response = await fetch(`http://localhost:8000/event/create`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(dtoIn),
-    // });
-    // const responseJson = await response.json();
+    setEventLoadObject((current) => ({ ...current, state: "pending" }));
+    const response = await fetch(`http://localhost:8000/event/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dtoIn),
+    });
+    const responseJson = await response.json();
 
-    // if (response.status < 400) {
-    //   setEventLoadObject((current) => {
-    //     current.data.push(responseJson);
-    //     current.data.sort((a, b) => new Date(a.date) - new Date(b.date));
-    //     return { state: "ready", data: current.data };
-    //   });
-    //   return responseJson;
-    // } else {
-    //   setEventLoadObject((current) => {
-    //     return { state: "error", data: current.data, error: responseJson };
-    //   });
-    //   throw new Error(JSON.stringify(responseJson, null, 2));
-    // }
-    console.log("po kliknutí jsou data:" + JSON.stringify(dtoIn));
+    await fetch(`http://localhost:8000/schedule/addEvent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: responseJson.id }), // Assuming responseJson has the id
+      });
+
+    if (response.status < 400) {
+      setEventLoadObject((current) => {
+        current.data.push(responseJson);
+        current.data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        return { state: "ready", data: current.data };
+      });
+      return responseJson;
+    } else {
+      setEventLoadObject((current) => {
+        return { state: "error", data: current.data, error: responseJson };
+      });
+      throw new Error(JSON.stringify(responseJson, null, 2));
+    }
   }
 
   const value = {
