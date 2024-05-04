@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  height: 100vh; /* Nastavení výšky pro zajistění modrého pozadí ve výšce okna prohlížeče */
+  
 }
 
 .App-logo {
