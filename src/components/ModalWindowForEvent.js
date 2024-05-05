@@ -1,32 +1,64 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ScheduleDataContext } from "./ScheduleDataContext";
 
-function ModalWindowForEvent({ showModal, toggleModal }) {
+function ModalWindowForEvent({ showModal, toggleModal, eventModalType, eventUpdateProps }) {
+  // Define state variables for modal inputs
   const [startTime, setStartTime] = useState("00:00");
   const [endTime, setEndTime] = useState("00:00");
-  const [selectedColor, setSelectedColor] = useState("#2563eb"); // Initial color
+  const [selectedColor, setSelectedColor] = useState("#2563eb");
   const [eventName, setEventName] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState("Monday");
   const [repeatFrequency, setRepeatFrequency] = useState("none");
   const [eventDescription, setEventDescription] = useState("");
 
 
+  // Update state values based on eventUpdateProps when eventModalType is 'Update'
+  useEffect(() => {
+    if (eventModalType === 'Update' && eventUpdateProps) {
+      const { timeStart, timeEnd, selectedColor, eventName, dayOfWeek, repeatFrequency, eventDescription } = eventUpdateProps;
+        setStartTime(timeStart);
+        setEndTime(timeEnd);
+        setSelectedColor(selectedColor);
+        setEventName(eventName);
+        setDayOfWeek(dayOfWeek);
+        setRepeatFrequency(repeatFrequency);
+        setEventDescription(eventDescription);
+      
+    }
+  }, [eventModalType, eventUpdateProps]);
+  
   const { handlerMap } = useContext(ScheduleDataContext);
 
-  const handleCreateEvent = () => {
-    // Call the handleCreateEvent method from the provider
-    handlerMap.handleCreateEvent({
-      startTime,
-      endTime,
-      selectedColor,
-      eventName,
-      dayOfWeek,
-      repeatFrequency,
-      eventDescription,
-    });
-    // Close the modal after creating the event
+  const handleCreateOrUpdateEvent = () => {
+    if (eventModalType === "Create") {
+      // Call the handleCreateEvent method from the provider
+      handlerMap.handleCreateEvent({
+        startTime,
+        endTime,
+        selectedColor,
+        eventName,
+        dayOfWeek,
+        repeatFrequency,
+        eventDescription,
+      });
+    } else if (eventModalType === "Update") {
+      const { id } = eventUpdateProps;
+      // Call the handleUpdateEvent method from the provider
+      handlerMap.handleUpdateEvent({
+        startTime,
+        endTime,
+        selectedColor,
+        eventName,
+        dayOfWeek,
+        repeatFrequency,
+        eventDescription,
+        id
+      });
+    }
+    // Close the modal after creating/updating the event
     toggleModal();
   };
+  
 
   // Function to handle time change
   const handleTimeChange = (event, setTime) => {
@@ -53,7 +85,7 @@ function ModalWindowForEvent({ showModal, toggleModal }) {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t bg-violet-200 ">
               <h3 className="text-lg font-semibold text-black">
-                Create New Event
+                  {eventModalType === "Create" ? "Create new event" : "Update event"}
               </h3>
               <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" onClick={toggleModal}>
                 <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -141,9 +173,9 @@ function ModalWindowForEvent({ showModal, toggleModal }) {
                 </button>
 
                 {/* Submit Button */}
-                <button type="submit" onClick={handleCreateEvent} className="text-white inline-flex hover:bg-violet-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-violet-400">
+                <button type="submit" onClick={handleCreateOrUpdateEvent} className="text-white inline-flex hover:bg-violet-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-violet-400">
                   <svg className="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 0 0 2 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h3a1 1 0 110 2h-3v3a1 1 0 112 0v-3h1a1 1 0 011-1v-6a1 1 0 01-1-1v-1a1 1 0 011-1h1V6a1 1 0 01-1-1h-6z" clipRule="evenodd"></path></svg>
-                  Create
+                  {eventModalType === "Create" ? "Create" : "Update" }
                 </button>
               </div>
             </form>

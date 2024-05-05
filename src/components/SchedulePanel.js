@@ -8,6 +8,8 @@ import { useSwipeable } from "react-swipeable";
 function SchedulePanel() {
   const { eventList } = useContext(ScheduleDataContext);
 
+  
+
   const handlers = useSwipeable({
     onSwipedLeft: () => {
       console.log("Swiped Left");
@@ -22,6 +24,12 @@ function SchedulePanel() {
   const [backgroundColor, setBackgroundColor] = useState("bg-black");
   const [showModal, setShowModal] = useState(false);
 
+  const [selectedDay, setSelectedDay] = useState(null);
+  useEffect(() => {
+
+    console.log("Selected day changed to", selectedDay);
+  }, [selectedDay]);
+
   const toggleModal = () => {
     setShowModal(!showModal);
   };
@@ -33,9 +41,10 @@ function SchedulePanel() {
   const totalMinutes = currentHour * 60 + currentMinute;
   const percentage = (totalMinutes / totalMinutesInDay) * 100;
 
+
   return (
     <div id="createDivBox" className="w-full h-full my-2 rounded-3xl overflow-hidden">
-      <CurrentDayBar />
+      <CurrentDayBar setSelectedDay={setSelectedDay} selectedDay={selectedDay} />
       <div className={`flex relative mx-2 bg-white h-full shadow-md rounded-3xl overflow-hidden overflow-y-auto`} style={{ height: '85%' }} {...handlers}>
         <div className="grid grid-cols-1 flex-none m-1 h-full w-10" style={{ height: '300%' }}>
           {[...Array(24)].map((_, index) => (
@@ -49,21 +58,21 @@ function SchedulePanel() {
         </div>
         <div className="w-full m-2" style={{ height: '300%' }}>
           <div className="h-full grid grid-cols-1" style={{ gridTemplateRows: 'repeat(288, 1fr)' }}>
-            
-          {eventList && eventList.map(event => (
-            <Event 
-              key={event.id} 
-              eventName={event.eventName} 
-              timeStart={event.startTime} 
-              timeEnd={event.endTime}
-              selectedColor={event.selectedColor}
-              dayOfWeek={event.dayOfWeek}
-              repeatFrequency={event.repeatFrequency}
-              eventDescription={event.eventDescription}
-            />  
-          ))}
-
-
+            {eventList && eventList.map(event => (
+              (event.dayOfWeek === selectedDay || event.repeatFrequency === "daily") && (
+                <Event
+                  key={event.id}
+                  eventName={event.eventName}
+                  timeStart={event.startTime}
+                  timeEnd={event.endTime}
+                  selectedColor={event.selectedColor}
+                  dayOfWeek={event.dayOfWeek}
+                  repeatFrequency={event.repeatFrequency}
+                  eventDescription={event.eventDescription}
+                  id={event.id}
+                />
+              )
+            ))}
           </div>
           <div className="sticky bottom-4 float-right z-10">
             <button
@@ -73,7 +82,7 @@ function SchedulePanel() {
               +
             </button>
           </div>
-          <ModalWindowForEvent showModal={showModal} toggleModal={toggleModal} />
+          <ModalWindowForEvent showModal={showModal} toggleModal={toggleModal} eventModalType={"Create"} />
         </div>
       </div>
     </div>
