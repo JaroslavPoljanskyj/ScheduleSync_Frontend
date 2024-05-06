@@ -43,7 +43,7 @@ function SchedulePanel() {
 
 
   return (
-    <div id="createDivBox" className="w-full h-full my-2 rounded-3xl overflow-hidden">
+    <div className="w-full h-full my-2 rounded-3xl overflow-hidden">
       <CurrentDayBar setSelectedDay={setSelectedDay} selectedDay={selectedDay} />
       <div className={`flex relative mx-2 bg-white h-full shadow-md rounded-3xl overflow-hidden overflow-y-auto`} style={{ height: '85%' }} {...handlers}>
         <div className="grid grid-cols-1 flex-none m-1 h-full w-10" style={{ height: '300%' }}>

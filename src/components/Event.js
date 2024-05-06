@@ -12,7 +12,6 @@ function Event({
   id
 }) {
  
-  
   const [showDropdown, setShowDropdown] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -25,19 +24,17 @@ function Event({
     setShowDropdown(false); // Close the dropdown when opening the modal
   };
 
-  // Parse the time data into minutes
+  // Parse the time data into minutes and round the minutes
   const fromHours = parseInt(timeStart.split(':')[0]);
-  const fromMinutes = parseInt(timeStart.split(':')[1]);
+  const fromMinutes = Math.round(parseInt(timeStart.split(':')[1]) / 5) * 5;
   const toHours = parseInt(timeEnd.split(':')[0]);
-  const toMinutes = parseInt(timeEnd.split(':')[1]);
+  const toMinutes = Math.round(parseInt(timeEnd.split(':')[1]) / 5) * 5;
   
   // Calculate the difference between timeEnd and timeStart in minutes
   const minutesDiff = (toHours - fromHours) * 60 + (toMinutes - fromMinutes);
   
   // Calculate the gridRow based on timeStart
   const gridRow = fromHours * 60 / 5 + fromMinutes / 5 + 1;
-
-
 
   const handleEdit = () => {
     // Logic for editing the event
@@ -77,26 +74,25 @@ function Event({
           )}
         </div>
       </div>
-              {showModal && (
-          <ModalWindowForEvent 
-            showModal={showModal} 
-            toggleModal={toggleModal} 
-            eventModalType={"Update"} 
-            eventUpdateProps={{
-              timeStart,
-              timeEnd,
-              selectedColor,
-              eventName,
-              dayOfWeek,
-              repeatFrequency,
-              eventDescription,
-              id
-            }}
-          />
-        )}   
- </div>
+      {showModal && (
+        <ModalWindowForEvent 
+          showModal={showModal} 
+          toggleModal={toggleModal} 
+          eventModalType={"Update"} 
+          eventUpdateProps={{
+            timeStart,
+            timeEnd,
+            selectedColor,
+            eventName,
+            dayOfWeek,
+            repeatFrequency,
+            eventDescription,
+            id
+          }}
+        />
+      )}   
+    </div>
   );
-
 }
 
 export default Event;
